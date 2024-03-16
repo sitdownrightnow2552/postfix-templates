@@ -11,11 +11,11 @@
 
 .rwf : if err != nil { fmt.Errorf("text: %w", $expr$) }
     ERROR -> if $expr$ != nil {\
-		return $ret*:regularExpression(defaultReturnValues, "([^,]*\$)", "")$fmt.Errorf("$VAR0$: %w", $expr$)\
+		return $ret*:regularExpression(defaultReturnValues, "([^,]*\$)", "")$fmt.Errorf("$VAR0:errorVariable()$: %w", $expr$)\
 	}
 
 .wrapf : fmt wrap err
-    ERROR ->  fmt.Errorf("$VAR0$: %w", $expr$)
+    ERROR ->  fmt.Errorf("$VAR0:errorVariable()$: %w", $expr$)
 
 ## If check
 .ifis : if is something then do something
