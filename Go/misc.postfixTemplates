@@ -11,11 +11,11 @@
 
 .rwf : if err != nil { return fmt.Errorf("text: %w", $expr$) }
     ERROR -> if $expr$ != nil {\
-		return $ret*:regularExpression(defaultReturnValues, "([^,]*\$)", "")$fmt.Errorf("$VAR0:errorVariable()$: %w", $expr$)\
+		return $ret*:regularExpression(defaultReturnValues, "([^,]*\$)", "")$fmt.Errorf("$VAR0:errorVariable():err$: %w", $expr$)\
 	}
 
 .wrapf : fmt wrap err
-    ERROR ->  fmt.Errorf("$VAR0:errorVariable()$: %w", $expr$)
+    ERROR ->  fmt.Errorf("$VAR0:errorVariable():err$: %w", $expr$)
 
 # If Check
 .ifis : if is something then do something
@@ -52,10 +52,10 @@
 
 # Json
 .marshal : json marshal
-    ANY        ->  $VAR0$, $VAR1::err$ := json.Marshal($expr$)
+    ANY        ->  $VAR0$, $VAR1:errorVariable():err$ := json.Marshal($expr$)
 
 .unmarshal : json unmarshal
-    BYTESLICE  ->  $VAR1::err$ := json.Unmarshal($expr$, $VAR0$)
+    BYTESLICE  ->  $VAR1:errorVariable():err$ := json.Unmarshal($expr$, $VAR0$)
 
 # String
 .split : split string
@@ -74,6 +74,12 @@
 # Slices
 .last : get last item
     ARRAY  ->  $expr$[len($expr$)-1]
+
+.push : append-assign
+    ARRAY -> $expr$ = append($expr$, x)
+
+.clone : copy using append()
+    ARRAY -> $var$ = append($expr$[:0:0], $expr$...)
 
 .pop : get and remove last item
     ARRAY -> $var$, $expr$ = $expr$[len($expr$)-1], $expr$[:len($expr$)-1]
