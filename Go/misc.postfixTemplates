@@ -1,0 +1,97 @@
+## Errors
+.re : if err != nil { return err }
+    ERROR -> if $expr$ != nil {\
+		return $ret*:defaultReturnValues(expr)$\
+	}
+
+.rp : if err != nill { panic(err) }
+    ERROR -> if $expr$ != nil {\
+		panic($expr$)\
+	}
+
+.rwf : if err != nil { fmt.Errorf("text: %w", $expr$) }
+    ERROR -> if $expr$ != nil {\
+		return $ret*:regularExpression(defaultReturnValues, "([^,]*\$)", "")$fmt.Errorf("$VAR0$: %w", $expr$)\
+	}
+
+.wrapf : fmt wrap err
+    ERROR ->  fmt.Errorf("$VAR0$: %w", $expr$)
+
+## If check
+.ifis : if is something then do something
+    ERROR -> if errors.Is($expr$, $var$) {\
+        $END$\
+    }
+    ANY -> if $expr$ == $var$ {\
+        $END$\
+    }
+
+.ifnot : if not something then do something
+    ERROR -> if !errors.Is($expr$, $var$) {\
+        $END$\
+    }
+    ANY -> if $expr$ != $var$ {\
+        $END$\
+    }
+
+.ifas : if as something do something
+    ERROR -> if errors.as($expr$, $var$) {\
+        $END$\
+    }
+    ANY -> if $var::_$, ok := s.($type$); ok {\
+        $END$\
+    }
+
+.ifcontains : if contains something do something
+    ARRAY -> if slices.Contains($expr$, $item$) {\
+        $END$\
+    }
+    STRING -> if strings.Contains($expr$, $item$) {\
+        $END$\
+    }
+
+## Json
+.marshal : json marshal
+    ANY        ->  $VAR0$, $VAR1::err$ := json.Marshal($expr$)
+
+.unmarshal : json unmarshal
+    BYTESLICE  ->  $VAR1::err$ := json.Unmarshal($expr$, $VAR0$)
+
+## String
+.split : split string
+    STRING     ->  strings.Split($expr$, "$VAR0$")
+
+.contains : string contains
+    STRING     ->  strings.Contains($expr$, "$VAR0$")
+
+## Return
+.rt : return value
+    ANY ->  return $expr$
+
+.rn : return value, nil
+    ANY ->  return $expr$, nil
+
+## Slices
+.last : get last item
+    ARRAY  ->  $expr$[len($expr$)-1]
+
+.pop : get and remove last item
+    ARRAY -> $var$, $expr$ = $expr$[len($expr$)-1], $expr$[:len($expr$)-1]
+
+.shift : get and remove first item
+    ARRAY -> $var$, $expr$ = $expr$[0], $expr$[1:]
+
+.deletei : delete item at index
+    ARRAY  ->  $expr$ = append($expr$[:$VAR0$], $expr$[$VAR0$+1:]...)
+
+## Conversions
+.toInt : convert string to int
+    STRING     ->  $VAR0$, $VAR1$ := strconv.Atoi($expr$)
+
+.toString : convert to string
+    INT        ->  strconv.Itoa($expr$)
+    FLOAT      ->  strconv.FormatFloat($expr$, 'f', 6, 64)
+    BYTESLICE  ->  string($expr$)
+
+.toByte : convert string to byte
+    STRING     ->  []byte($expr$)
