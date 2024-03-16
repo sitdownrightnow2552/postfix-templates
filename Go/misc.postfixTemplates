@@ -1,4 +1,4 @@
-## Errors
+# Errors
 .re : if err != nil { return err }
     ERROR -> if $expr$ != nil {\
 		return $ret*:defaultReturnValues(expr)$\
@@ -9,7 +9,7 @@
 		panic($expr$)\
 	}
 
-.rwf : if err != nil { fmt.Errorf("text: %w", $expr$) }
+.rwf : if err != nil { return fmt.Errorf("text: %w", $expr$) }
     ERROR -> if $expr$ != nil {\
 		return $ret*:regularExpression(defaultReturnValues, "([^,]*\$)", "")$fmt.Errorf("$VAR0:errorVariable()$: %w", $expr$)\
 	}
@@ -17,7 +17,7 @@
 .wrapf : fmt wrap err
     ERROR ->  fmt.Errorf("$VAR0:errorVariable()$: %w", $expr$)
 
-## If check
+# If Check
 .ifis : if is something then do something
     ERROR -> if errors.Is($expr$, $var$) {\
         $END$\
@@ -50,28 +50,28 @@
         $END$\
     }
 
-## Json
+# Json
 .marshal : json marshal
     ANY        ->  $VAR0$, $VAR1::err$ := json.Marshal($expr$)
 
 .unmarshal : json unmarshal
     BYTESLICE  ->  $VAR1::err$ := json.Unmarshal($expr$, $VAR0$)
 
-## String
+# String
 .split : split string
     STRING     ->  strings.Split($expr$, "$VAR0$")
 
 .contains : string contains
     STRING     ->  strings.Contains($expr$, "$VAR0$")
 
-## Return
+# Return
 .rt : return value
     ANY ->  return $expr$
 
 .rn : return value, nil
     ANY ->  return $expr$, nil
 
-## Slices
+# Slices
 .last : get last item
     ARRAY  ->  $expr$[len($expr$)-1]
 
@@ -84,7 +84,7 @@
 .deletei : delete item at index
     ARRAY  ->  $expr$ = append($expr$[:$VAR0$], $expr$[$VAR0$+1:]...)
 
-## Conversions
+# Conversions
 .toInt : convert string to int
     STRING     ->  $VAR0$, $VAR1$ := strconv.Atoi($expr$)
 

@@ -1,6 +1,6 @@
 # Templates for https://github.com/go-errors/errors
 
-.rw : if err != nil { errors.New(err) }
+.rw : if err != nil { return errors.New(err) }
     ERROR -> if $expr$ != nil {\
 		return $ret*:regularExpression(defaultReturnValues, "([^,]*\$)", "")$errors.New($expr$)\
 	}
